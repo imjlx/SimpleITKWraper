@@ -247,6 +247,9 @@ class PETSeriesProcessor(DCMSeriesProcessor):
         super().__init__(folder=folder, is_read_MetaData=is_read_MetaDate)
 
     # Functions to get important info from MetaData
+    def GetRadiopharmaceutical(self):
+        return self.GetSpecificMetaData("0054|0016, 0018|0031")
+    
     def GetInjectionTime(self) -> datetime.datetime:
 
         MetaDate_DateTime = self.GetSpecificMetaData("0054|0016, 0018|1078")
