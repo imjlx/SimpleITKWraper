@@ -24,7 +24,7 @@ class OrganDoseCalculator(PropertyCalculator):
         self.Ac = kwargs.get("Ac", None)
 
     def CalculateOneOrgan(self, ID: int, **kwargs):
-        assert self.Ac is not None, "Calculate cumulated activity before organ dose."
+        assert self.Ac is not None, "You should calculate cumulated activity before organ dose."
         N = kwargs.get("N", self.N)
 
         dosemap_arr = sitkw.Atlas.GenerateMaskedOneLineArray(

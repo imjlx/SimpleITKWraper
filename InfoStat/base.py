@@ -88,13 +88,14 @@ class PropertyCalculator(object):
             pd.DataFrame: Also return the DataFrame
         """
         if "isAdd" not in kwargs:
-            kwargs["isAdd"]: bool = True
+            kwargs["isAdd"] = True
 
         if kwargs["isAdd"] and os.path.exists(fpath):
             df = pd.read_csv(fpath, index_col=0, header=0)
         else:
             df = pd.DataFrame()
 
+        assert self.property is not None, "Property is None. Please check the reason."
         df = pd.concat([df, self.property.rename(name)], axis=1)
         df = df.sort_index()
 

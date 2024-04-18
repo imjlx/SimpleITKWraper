@@ -65,9 +65,9 @@ class PETRescaler(object):
 
         # Get Useful Information for DICOM or Input
         if folder is not None:
-            series_processor = sitkw.Image.PETSeriesProcessor(folder=folder)
-            self.Aa = series_processor.GetAcquisitionTimeActivityInBq()
-            self.weight = series_processor.GetWeight()
+            self.series_processor = sitkw.Image.PETSeriesProcessor(folder=folder)
+            self.Aa = self.series_processor.GetAcquisitionTimeActivityInBq()
+            self.weight = self.series_processor.GetWeight()
         else:
             self.Aa = Aa
             self.weight = weight
@@ -93,10 +93,13 @@ class PETRescaler(object):
         """
         # calculate weight
         weight_whole = self.series_processor.GetWeight()    # unit: kg
+        print(f"Weight in DICOM: {weight_whole}")
 
         organ_volumes = sitkw.CalculateOrganVolume(atlas=self.atlas, isWhole=False)
         # weight in image
-        weight_img = np.sum([organ_volumes[ID] * OrganDict.OrganDensity[ID] * 1E-6 for ID in organ_volumes])
+        for ID in organ_volumes.keys():
+            print(f"Organ {ID}")
+        weight_img = np.sum([organ_volumes[ID] * OrganDict.OrganDensity[ID] * 1E-6 for ID in organ_volumes.keys()])
         if weight_img > weight_whole:
             weight_img = weight_whole
         # reference organ weight, body(10), muscle(13), bone(46)
@@ -104,7 +107,9 @@ class PETRescaler(object):
 
         # Calculate Activity
         organ_activities = sitkw.CalRawActivity(atlas=self.atlas, pet=self.pet, isWhole=False)
-        activity_img = np.sum([organ_activities[ID] for ID in organ_activities])
+        # activity_img = np.sum([organ_activities[ID] for ID in organ_activities])
+        activity_img = np.sum(organ_activities.values)
+
         activity_ref = np.sum([organ_activities[ID] for ID in [10, 13, 46]])
         activity_out = (weight_img - weight_ref) * activity_ref / weight_ref
         activity_theoretical = self.series_processor.GetAcquisitionTimeActivityInBq()
