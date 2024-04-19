@@ -93,12 +93,9 @@ class PETRescaler(object):
         """
         # calculate weight
         weight_whole = self.series_processor.GetWeight()    # unit: kg
-        print(f"Weight in DICOM: {weight_whole}")
 
         organ_volumes = sitkw.CalculateOrganVolume(atlas=self.atlas, isWhole=False)
         # weight in image
-        for ID in organ_volumes.keys():
-            print(f"Organ {ID}")
         weight_img = np.sum([organ_volumes[ID] * OrganDict.OrganDensity[ID] * 1E-6 for ID in organ_volumes.keys()])
         if weight_img > weight_whole:
             weight_img = weight_whole
